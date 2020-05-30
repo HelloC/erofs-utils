@@ -36,6 +36,25 @@ void erofs_show_config(void)
 
 void erofs_exit_configure(void)
 {
+#ifdef HAVE_LIBSELINUX
+	if (cfg.sehnd)
+		selabel_close(cfg.sehnd);
+#endif
+}
 
+static unsigned int fullpath_prefix;	/* root directory prefix length */
+
+void erofs_set_fs_root(const char *rootdir)
+{
+	fullpath_prefix = strlen(rootdir);
+}
+
+const char *erofs_fspath(const char *fullpath)
+{
+	const char *s = fullpath + fullpath_prefix;
+
+	while (*s == '/')
+		s++;
+	return s;
 }
 

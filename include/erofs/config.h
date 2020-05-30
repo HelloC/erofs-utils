@@ -11,6 +11,11 @@
 
 #include "defs.h"
 
+#ifdef HAVE_LIBSELINUX
+#include <selinux/selinux.h>
+#include <selinux/label.h>
+#endif
+
 enum {
 	FORCE_INODE_COMPACT = 1,
 	FORCE_INODE_EXTENDED,
@@ -22,6 +27,9 @@ struct erofs_configure {
 	bool c_dry_run;
 	bool c_legacy_compress;
 
+#ifdef HAVE_LIBSELINUX
+	struct selabel_handle *sehnd;
+#endif
 	/* related arguments for mkfs.erofs */
 	char *c_img_path;
 	char *c_src_path;
@@ -38,6 +46,9 @@ extern struct erofs_configure cfg;
 void erofs_init_configure(void);
 void erofs_show_config(void);
 void erofs_exit_configure(void);
+
+void erofs_set_fs_root(const char *rootdir);
+const char *erofs_fspath(const char *fullpath);
 
 #endif
 
